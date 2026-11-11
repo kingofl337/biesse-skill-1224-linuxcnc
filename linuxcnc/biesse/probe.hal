@@ -1,0 +1,7 @@
+# Read-only bus probe: loads nyx and the servo thread, never sets power or enable.
+# Run from this folder:  halrun -I -f probe.hal   then:  show pin nyx.0.servo
+loadrt threads name1=servo-thread period1=1000000 fp1=1
+loadrt nyx maxdrives=4 param_file=par/empty.par nodma=1
+addf nyx.0.rd servo-thread
+addf nyx.0.wr servo-thread
+start

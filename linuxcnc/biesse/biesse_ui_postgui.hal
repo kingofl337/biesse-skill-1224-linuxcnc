@@ -1,0 +1,10 @@
+# Biesse "biesse_ui" screen - post-GUI HAL (real machine)
+# (biesse-pgui.hal is the AXIS PyVCP drive panel; the DEBUG page shows the nyx pins instead)
+
+# Tool length sensor WQ12: NOT CONNECTED. Since the nyx_mtl2 v3.9.3 FPGA firmware
+# (2026-11-03) servo-MM.in-00..02 carry P-OT / N-OT / DEC instead of the latch inputs
+# EXT1..3, and the sensor was on EXT1 (CN1-10) - it is not reported any more.
+# Do NOT connect motion.probe-input to servo-03.in-00 (that is now Z's P-OT).
+# TOOL PROBE is blocked by [BIESSE] TOOL_SENSOR = NO in biesse_ui.ini until the
+# sensor has a pin again.
+#net probe-in  nyx.0.servo-?? => motion.probe-input

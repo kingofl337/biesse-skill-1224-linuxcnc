@@ -1,0 +1,64 @@
+(Biesse Skill 1224 - X/Y/Z warm-up)
+(Machine coordinates via G53, 100 mm inside the soft limits:)
+(  X -3259.6 .. -98    soft limits X -3359.6 .. 2)
+(  Y -1628 .. -98      soft limits Y -1728 .. 2)
+(Z first rises to the top, machine Z0. At the start of every lap, with X/Y stopped at the)
+(X min / Y min corner, Z strokes down 4 in [101.6 mm, to machine Z -101.6] and back twice.)
+(X/Y only ever move with Z at the top. Keep 4 in clear below the spindle at that corner.)
+(Each pass: Z strokes, then rectangle + both diagonals.)
+(Lead-in lap at 12 m/min [Z 1.5 m/min], then 2 cycles ramping to the X/Y maximum:)
+(  cycle 1 = 30 m/min, cycle 2 = 60 m/min [Z 3 m/min, its maximum], then parks. About 5 minutes.)
+
+G21 G90 G17 G94 G40 G64 P0.1
+M5 M9
+
+(bounds, cycles and top speed)
+#<_xmin> = -3259.6
+#<_xmax> = -98
+#<_ymin> = -1628
+#<_ymax> = -98
+#<_cycles> = 2
+#<_fmax> = 60000
+#<_zdown> = -101.6
+#<_zfeed> = 3000
+
+o300 sub
+  (Z strokes at the current X/Y; #1 = Z feed mm/min)
+  o310 repeat [2]
+    G53 G1 Z#<_zdown> F#1
+    G53 G1 Z0
+  o310 endrepeat
+o300 endsub
+
+o100 sub
+  (#1 = X/Y feed mm/min, #2 = Z feed mm/min)
+  o300 call [#2]
+  G53 G1 X#<_xmin> Y#<_ymin> F#1
+  G53 G1 X#<_xmax> Y#<_ymin>
+  G53 G1 X#<_xmax> Y#<_ymax>
+  G53 G1 X#<_xmin> Y#<_ymax>
+  G53 G1 X#<_xmin> Y#<_ymin>
+  G53 G1 X#<_xmax> Y#<_ymax>
+  G53 G1 X#<_xmin> Y#<_ymax>
+  G53 G1 X#<_xmax> Y#<_ymin>
+  G53 G1 X#<_xmin> Y#<_ymin>
+o100 endsub
+
+(Z to the top first, then move to the start corner at a gentle feed)
+G53 G1 Z0 F1500
+G53 G1 X#<_xmin> Y#<_ymin> F5000
+
+(lead-in lap)
+o100 call [12000] [1500]
+
+#<cycle> = 1
+o200 repeat [#<_cycles>]
+  (feed rises evenly and reaches _fmax on the last cycle)
+  o100 call [#<_fmax> * #<cycle> / #<_cycles>] [#<_zfeed>]
+  #<cycle> = [#<cycle> + 1]
+o200 endrepeat
+
+(park in the middle of the table)
+G53 G1 X-1678.8 Y-863 F6000
+
+M2

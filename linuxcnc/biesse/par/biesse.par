@@ -1,0 +1,8 @@
+;
+; Biesse Skill 1224 - parameters written to every drive at each LinuxCNC start (RAM only).
+; Everything else stays as stored in the drives (Biesse tuning).
+;
+; Pn81E: map CN1 inputs into the MECHATROLINK monitor bits IO12..IO14,
+; which nyx reports as servo-MM.in-00..02:
+;   IO12 = SI1 CN1-7 P-OT, IO13 = SI2 CN1-8 N-OT, IO14 = SI3 CN1-9 /DEC (home)
+Pn81E	0x0432	;	Input Signal Monitor Selection

@@ -1,0 +1,5 @@
+;
+; Restore Biesse overtravel inputs: P-OT on CN1-7, N-OT on CN1-8
+;
+Pn50A	0x1881	; *Input Signal Selection 1
+Pn50B	0x8882	; *Input Signal Selection 2

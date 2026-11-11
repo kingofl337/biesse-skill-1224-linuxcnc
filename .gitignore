@@ -1,0 +1,9 @@
+# step-by-step copies made while tuning (Git keeps the history now)
+*.bak-*
+*.zswitch-attempt
+*.xtest1
+*.yfinal
+# Python / generated
+__pycache__/
+*.pyc
+linuxcnc/biesse_sim/qtvcp/screens/biesse_uc/resources.py

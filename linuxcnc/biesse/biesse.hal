@@ -1,0 +1,122 @@
+#
+# Biesse Skill 1224 - YMTL2P / nyx HAL
+# Based on the nyx-mtl2 sample, 2019-2023 http://yurtaev.com
+#
+# joint.0 = X1 = servo-00 (st 0x41)
+# joint.1 = X2 = servo-01 (st 0x42)
+# joint.2 = Y  = servo-02 (st 0x43)
+# joint.3 = Z  = servo-03 (st 0x44)
+#
+
+loadrt [KINS]KINEMATICS
+
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadrt nyx maxdrives=[NYX]AXES param_file=[NYX]PARAMS nodma=1
+
+addf nyx.0.rd servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf nyx.0.wr servo-thread
+
+#-------- limits / home --------
+# The drives stop on their own P-OT/N-OT (CN1-7/8, Pn001.1 = decel + servolock);
+# nyx does NOT report P-OT/N-OT/DEC. servo-MM.in-00..02 are the latch inputs
+# (tested 2026-11-01): in-00 = /EXT1 CN1-10 = tool-length sensor (all drives),
+# in-01 = /EXT2 CN1-11, in-02 = /EXT3 CN1-12 (spare). Plan: Pn511.2 = 3 maps /EXT2
+# to CN1-9 so the home switch reads on in-01. Lines below are the OLD guess.
+
+#net x1-pos-limit joint.0.pos-lim-sw-in <= nyx.0.servo-00.in-00
+#net x1-neg-limit joint.0.neg-lim-sw-in <= nyx.0.servo-00.in-01
+#net x1-home      joint.0.home-sw-in    <= nyx.0.servo-00.in-02
+#net x2-pos-limit joint.1.pos-lim-sw-in <= nyx.0.servo-01.in-00
+#net x2-neg-limit joint.1.neg-lim-sw-in <= nyx.0.servo-01.in-01
+#net x2-home      joint.1.home-sw-in    <= nyx.0.servo-01.in-02
+#net y-pos-limit  joint.2.pos-lim-sw-in <= nyx.0.servo-02.in-00
+#net y-neg-limit  joint.2.neg-lim-sw-in <= nyx.0.servo-02.in-01
+#net y-home       joint.2.home-sw-in    <= nyx.0.servo-02.in-02
+#net z-pos-limit  joint.3.pos-lim-sw-in <= nyx.0.servo-03.in-00
+#net z-neg-limit  joint.3.neg-lim-sw-in <= nyx.0.servo-03.in-01
+#net z-home       joint.3.home-sw-in    <= nyx.0.servo-03.in-02
+
+# encoder index for homing (enable with HOME_USE_INDEX = YES)
+# X: X1's index drives both gantry joints (X2 follows); servo-01's stays unconnected
+net x-index  nyx.0.servo-00.index-enable <=> joint.0.index-enable joint.1.index-enable
+net y-index  nyx.0.servo-02.index-enable <=> joint.2.index-enable
+net z-index  nyx.0.servo-03.index-enable <=> joint.3.index-enable
+
+# Since the nyx_mtl2 v3.9.3 FPGA firmware (2026-11-03) servo-MM.in-00/01/02 report the
+# drive's P-OT / N-OT / DEC (no longer the latch inputs EXT1..3).
+# Z homes on its real home switch (cam on CN1-9, DEC): see [JOINT_3] in the INI.
+net z-home-sw  nyx.0.servo-03.in-02 => joint.3.home-sw-in
+
+# Y homes on its real home cam switch (DEC) plus index: see [JOINT_2] in the INI.
+net y-home-sw  nyx.0.servo-02.in-02 => joint.2.home-sw-in
+
+# X1 + X2 home together on the shared X home cam switch, read on X1 (DEC), with X1's
+# index for both joints (X2 follows; [JOINT_1] HOME_INDEX_NO_ENCODER_RESET = YES).
+# No following-error comparators any more: no axis stalls on a stop to home.
+net x-home-sw  nyx.0.servo-00.in-02 => joint.0.home-sw-in joint.1.home-sw-in
+
+#-------- motion --------
+
+setp nyx.0.servo-00.pos-scale [JOINT_0]SCALE
+setp nyx.0.servo-01.pos-scale [JOINT_1]SCALE
+setp nyx.0.servo-02.pos-scale [JOINT_2]SCALE
+setp nyx.0.servo-03.pos-scale [JOINT_3]SCALE
+
+setp nyx.0.servo-00.vel-scale [NYX]VEL_SCALE
+setp nyx.0.servo-01.vel-scale [NYX]VEL_SCALE
+setp nyx.0.servo-02.vel-scale [NYX]VEL_SCALE
+setp nyx.0.servo-03.vel-scale [NYX]VEL_SCALE
+
+setp nyx.0.servo-00.trq-scale [NYX]TRQ_SCALE
+setp nyx.0.servo-01.trq-scale [NYX]TRQ_SCALE
+setp nyx.0.servo-02.trq-scale [NYX]TRQ_SCALE
+setp nyx.0.servo-03.trq-scale [NYX]TRQ_SCALE
+
+net x1-pos-fb joint.0.motor-pos-fb <= nyx.0.servo-00.pos-fb
+net x2-pos-fb joint.1.motor-pos-fb <= nyx.0.servo-01.pos-fb
+net y-pos-fb  joint.2.motor-pos-fb <= nyx.0.servo-02.pos-fb
+net z-pos-fb  joint.3.motor-pos-fb <= nyx.0.servo-03.pos-fb
+
+net x1-cmd joint.0.motor-pos-cmd => nyx.0.servo-00.pos-cmd
+net x2-cmd joint.1.motor-pos-cmd => nyx.0.servo-01.pos-cmd
+net y-cmd  joint.2.motor-pos-cmd => nyx.0.servo-02.pos-cmd
+net z-cmd  joint.3.motor-pos-cmd => nyx.0.servo-03.pos-cmd
+
+# absolute encoders: set homed flag when position is valid, unhome on loss
+# DISABLED until encoder batteries are fitted (nyx reports 0 at every start)
+#net x1-absolute halui.joint.0.set-homed <= nyx.0.servo-00.abs-ok
+#net x2-absolute halui.joint.1.set-homed <= nyx.0.servo-01.abs-ok
+#net y-absolute  halui.joint.2.set-homed <= nyx.0.servo-02.abs-ok
+#net z-absolute  halui.joint.3.set-homed <= nyx.0.servo-03.abs-ok
+
+#net x1-abs-lost halui.joint.0.unhome <= nyx.0.servo-00.abs-lost
+#net x2-abs-lost halui.joint.1.unhome <= nyx.0.servo-01.abs-lost
+#net y-abs-lost  halui.joint.2.unhome <= nyx.0.servo-02.abs-lost
+#net z-abs-lost  halui.joint.3.unhome <= nyx.0.servo-03.abs-lost
+
+net x1-alarm joint.0.amp-fault-in <= nyx.0.servo-00.alarm
+net x2-alarm joint.1.amp-fault-in <= nyx.0.servo-01.alarm
+net y-alarm  joint.2.amp-fault-in <= nyx.0.servo-02.alarm
+net z-alarm  joint.3.amp-fault-in <= nyx.0.servo-03.alarm
+
+net x1-enable joint.0.amp-enable-out => nyx.0.servo-00.enable
+net x2-enable joint.1.amp-enable-out => nyx.0.servo-01.enable
+net y-enable  joint.2.amp-enable-out => nyx.0.servo-02.enable
+net z-enable  joint.3.amp-enable-out => nyx.0.servo-03.enable
+
+net estop => nyx.0.servo-00.power
+net estop => nyx.0.servo-01.power
+net estop => nyx.0.servo-02.power
+net estop => nyx.0.servo-03.power
+
+#-------- misc --------
+# TODO: wire the machine E-stop chain into iocontrol.0.emc-enable-in
+# (YMTL2P CN1 inputs are nyx.0.in-00..28). Software loop-back only for now.
+
+net estop <= iocontrol.0.user-enable-out
+net estop => iocontrol.0.emc-enable-in
+
+net tool-change iocontrol.0.tool-change => iocontrol.0.tool-changed
+net tool-prep   iocontrol.0.tool-prepare => iocontrol.0.tool-prepared

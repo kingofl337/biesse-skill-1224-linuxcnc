@@ -1,0 +1,10 @@
+# Biesse "biesse_ui" screen - post-GUI HAL (simulator)
+# spindle speed feedback for the Sact readout
+net spindle-speed-fb  spindle.0.speed-out-rps => spindle.0.speed-in
+
+# simulated tool length sensor: triggers when Z is below -300 (machine)
+loadrt comp names=sim-tool-sensor
+addf sim-tool-sensor servo-thread
+setp sim-tool-sensor.in1 -300
+net sim-z-pos   joint.2.pos-fb       => sim-tool-sensor.in0
+net probe-in    sim-tool-sensor.out  => motion.probe-input

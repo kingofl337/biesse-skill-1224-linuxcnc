@@ -1,0 +1,6 @@
+;
+; Commissioning only: disable drive overtravel inputs (P-OT/N-OT) on all drives.
+; Original Biesse values: Pn50A 0x1881, Pn50B 0x8882 (see par/limits-restore.par)
+;
+Pn50A	0x8881	; *Input Signal Selection 1 - P-OT ignored
+Pn50B	0x8888	; *Input Signal Selection 2 - N-OT ignored

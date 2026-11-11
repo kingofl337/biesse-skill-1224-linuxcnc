@@ -1,0 +1,48 @@
+#
+# Biesse Skill 1224 - PyVCP status panel (nyx-6.xml, first 4 drives used)
+# Based on nyx-6-pgui.hal, 2019-2023 http://yurtaev.com
+#
+
+net nyx-ready nyx.0.ready => pyvcp.led-ready
+net nyx-phase nyx.0.phase => pyvcp.phase
+
+net trq0 nyx.0.servo-00.trq-fb => pyvcp.trq0
+net trq1 nyx.0.servo-01.trq-fb => pyvcp.trq1
+net trq2 nyx.0.servo-02.trq-fb => pyvcp.trq2
+net trq3 nyx.0.servo-03.trq-fb => pyvcp.trq3
+
+net offline0 nyx.0.servo-00.offline => pyvcp.led-offline0 pyvcp.led-ready0.disable pyvcp.led-alarm0.disable pyvcp.led-warning0.disable
+net offline1 nyx.0.servo-01.offline => pyvcp.led-offline1 pyvcp.led-ready1.disable pyvcp.led-alarm1.disable pyvcp.led-warning1.disable
+net offline2 nyx.0.servo-02.offline => pyvcp.led-offline2 pyvcp.led-ready2.disable pyvcp.led-alarm2.disable pyvcp.led-warning2.disable
+net offline3 nyx.0.servo-03.offline => pyvcp.led-offline3 pyvcp.led-ready3.disable pyvcp.led-alarm3.disable pyvcp.led-warning3.disable
+
+net ready0 nyx.0.servo-00.ready => pyvcp.led-ready0
+net ready1 nyx.0.servo-01.ready => pyvcp.led-ready1
+net ready2 nyx.0.servo-02.ready => pyvcp.led-ready2
+net ready3 nyx.0.servo-03.ready => pyvcp.led-ready3
+
+net x1-alarm => pyvcp.led-alarm0
+net x2-alarm => pyvcp.led-alarm1
+net y-alarm  => pyvcp.led-alarm2
+net z-alarm  => pyvcp.led-alarm3
+
+net warning0 nyx.0.servo-00.warning pyvcp.led-warning0
+net warning1 nyx.0.servo-01.warning pyvcp.led-warning1
+net warning2 nyx.0.servo-02.warning pyvcp.led-warning2
+net warning3 nyx.0.servo-03.warning pyvcp.led-warning3
+
+net enabled0 nyx.0.servo-00.enabled => pyvcp.led-enabled0
+net enabled1 nyx.0.servo-01.enabled => pyvcp.led-enabled1
+net enabled2 nyx.0.servo-02.enabled => pyvcp.led-enabled2
+net enabled3 nyx.0.servo-03.enabled => pyvcp.led-enabled3
+
+net reset-alarm <= pyvcp.reset-alarm
+net reset-alarm => nyx.0.servo-00.reset-alarm
+net reset-alarm => nyx.0.servo-01.reset-alarm
+net reset-alarm => nyx.0.servo-02.reset-alarm
+net reset-alarm => nyx.0.servo-03.reset-alarm
+
+net code0 nyx.0.servo-00.alarm-code => pyvcp.code0
+net code1 nyx.0.servo-01.alarm-code => pyvcp.code1
+net code2 nyx.0.servo-02.alarm-code => pyvcp.code2
+net code3 nyx.0.servo-03.alarm-code => pyvcp.code3

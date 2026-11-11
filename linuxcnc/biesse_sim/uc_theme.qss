@@ -1,0 +1,113 @@
+
+/* ===== Biesse UC theme: dark green weave, orange buttons (appended) ===== */
+
+QMainWindow {
+    background: #1e331d;
+    background-image: url(qtvcp/screens/biesse_uc/images/bg_tex.png);
+    color: #ffffff;
+}
+QStatusBar {
+    background: #152515;
+    color: #ffffff;
+}
+QGroupBox {
+    background: rgba(35, 56, 35, 220);
+    border: 1px solid #3c5a37;
+    border-radius: 4px;
+}
+QGroupBox::title {
+    color: #f26a21;
+}
+QLabel {
+    color: #ffffff;
+}
+
+QPushButton, QToolButton, ActionButton, AxisToolButton {
+    background: #f26a21;
+    color: #ffffff;
+    border: 1px solid #ff8a4c;
+    border-radius: 3px;
+    font-weight: bold;
+}
+QPushButton:hover, QToolButton:hover, ActionButton:hover, AxisToolButton:hover {
+    background: #ff7f3a;
+}
+QPushButton:pressed, QToolButton:pressed, ActionButton:pressed, AxisToolButton:pressed {
+    background: #c4521a;
+}
+QPushButton:checked, QToolButton:checked, ActionButton:checked, AxisToolButton:checked {
+    background: #9c3f12;
+    border: 2px solid #ffffff;
+}
+QPushButton:disabled, QToolButton:disabled, ActionButton:disabled, AxisToolButton:disabled {
+    background: #2b4429;
+    color: #7f9a7a;
+    border: 1px solid #3c5a37;
+}
+
+ActionButton#action_estop, ActionButton#action_estop:checked {
+    background: #d92d2d;
+    border: 2px solid #ff6b6b;
+    color: #ffffff;
+}
+ActionButton#action_machine_on[isStateOn=true] {
+    background: #2e8b3e;
+    border: 2px solid #7be08f;
+}
+
+QTabBar::tab {
+    background: #2b4429;
+    color: #ffffff;
+    border: 1px solid #3c5a37;
+}
+QTabBar::tab:selected, QTabBar::tab:hover {
+    background: #f26a21;
+    color: #ffffff;
+}
+QTabWidget::pane {
+    border: 1px solid #3c5a37;
+}
+
+QLineEdit, StatusLabel, StateLabel, QSpinBox, QComboBox {
+    background: #0f1a0f;
+    color: #ffffff;
+    border: 1px solid #3c5a37;
+}
+DROLabel {
+    background: #0f1a0f;
+    color: #ffffff;
+    border: 1px solid #3c5a37;
+}
+DROLabel[isHomed=false] {
+    color: #e5484d;
+}
+EditorBase {
+    background: #0f1a0f;
+    color: #ffffff;
+}
+
+QSlider::groove:horizontal, QSlider::groove:vertical {
+    background: #3c5a37;
+}
+QSlider::handle:horizontal, QSlider::handle:vertical {
+    background: #f26a21;
+    border: 1px solid #ff8a4c;
+}
+QSlider::sub-page:horizontal, QSlider::add-page:vertical {
+    background: #f26a21;
+}
+
+QLineEdit#mdiline {
+    background: #0f1a0f;
+    color: #ffffff;
+    border: 1px solid #3c5a37;
+}
+QProgressBar {
+    background: #0f1a0f;
+    color: #ffffff;
+    border: 1px solid #3c5a37;
+    text-align: center;
+}
+QProgressBar::chunk {
+    background: #f26a21;
+}
